@@ -1,1 +1,2 @@
-+/html & css projects/.vscode/
+# Ignore VS Code workspace settings folder inside the HTML & CSS projects folder
+/html & css projects/.vscode/
