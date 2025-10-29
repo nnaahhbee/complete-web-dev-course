@@ -1,0 +1,46 @@
+body{
+    background-color: rgb(53, 49, 49);
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+    ;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-self: center;
+    align-items: center;
+
+
+}
+.card{
+    background-color: rgb(219, 215, 219);
+    border-radius: 10px;
+    padding: 30px;
+    width: 300px;
+}
+
+h2{
+    color: blue;
+    text-align: center;
+    margin-bottom: 20px;
+}
+form{
+    display: flex;
+    flex-direction: column;
+}
+
+input{
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: rgb(219, 215, 219);
+}
+
+button{
+    padding: 10px;
+    border: 2px solid gray;
+    border-radius: 8px;
+    background-color: rgb(31, 100, 204);
+    color: white;
+}
+
