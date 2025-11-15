@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodePen Project</title>
+    <link rel="stylesheet" href="css-codepen_project.css">
+</head>
+<body>
+    <svg width="0">
+  <filter id="rond" color-interpolation-filters="sRGB" primitiveUnits="objectBoundingBox">
+    <feComponentTransfer>
+      <feFuncA type="discrete" tableValues="0 0 1"></feFuncA>
+    </feComponentTransfer>
+    <feGaussianBlur stdDeviation=".032"></feGaussianBlur>
+    <feComponentTransfer>
+      <feFuncA type="discrete" tableValues="0 1"></feFuncA>
+    </feComponentTransfer>
+    <feComposite in="SourceGraphic" operator="in" result="rond"></feComposite>
+    <feComponentTransfer in="SourceGraphic">
+      <feFuncA type="discrete" tableValues="0 .5 0"></feFuncA>
+    </feComponentTransfer>
+    <feMorphology radius=".005"></feMorphology>
+    <feMorphology operator="dilate" radius=".005"></feMorphology>
+    <feBlend in="rond"></feBlend>
+  </filter>
+  <filter id="smoo" color-interpolation-filters="sRGB">
+    <feComponentTransfer>
+      <feFuncA type="discrete" tableValues="0 0 1"></feFuncA>
+    </feComponentTransfer>
+    <feGaussianBlur stdDeviation="2" result="blur"></feGaussianBlur>
+    <feComponentTransfer in="SourceGraphic">
+      <feFuncA type="discrete" tableValues="0 1 0"></feFuncA>
+    </feComponentTransfer>
+    <feMorphology radius="2"></feMorphology>
+    <feMorphology operator="dilate" radius="256"></feMorphology>
+    <feComposite in2="blur" operator="in"></feComposite>
+    <feGaussianBlur stdDeviation="2"></feGaussianBlur>
+    <feComponentTransfer result="line">
+      <feFuncA type="table" tableValues="-2 2 -2"></feFuncA>
+    </feComponentTransfer>
+    <feComponentTransfer in="blur">
+      <feFuncA type="table" tableValues="-3 2"></feFuncA>
+    </feComponentTransfer>
+    <feComposite in="SourceGraphic" operator="in"></feComposite>
+    <feBlend in2="line"></feBlend>
+  </filter>
+</svg>
+<section class="funky">
+  <div class="content">
+    <img src="assets/icon.png" alt="image">
+    <h1>HyperSensiFit</h1>
+    <h3>Coming Soon!</h3>
+    <div class="button">
+    <button>View</button>
+    <button>Register</button>
+    </div>   
+  </div>
+</section>
+</body>
+</html>

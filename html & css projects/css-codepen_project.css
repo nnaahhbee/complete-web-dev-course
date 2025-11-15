@@ -1,0 +1,123 @@
+/* relevant CSS for method 1 */
+.all3d {
+	perspective: 50em;
+
+	.content {
+		border: solid 2px var(--line-c);
+		border-radius: 1.5em;
+		transform: translate(-1em, 2em) rotatey(-11deg) rotatex(-13deg) rotate(1deg)
+			skew(-3deg, -3deg);
+		background: var(--back-c);
+		filter: var(--shdw);
+	}
+}
+
+/* relevant CSS for method 2 */
+.funky {
+	.content {
+		position: relative;
+		outline: solid 1em rgb(from var(--line-c) r g b/ 0.5);
+		padding-block: 7em;
+		filter: url(#rond) url(#smoo) var(--shdw);
+
+		&::before {
+			position: absolute;
+			inset: 0;
+			z-index: -1;
+			background: var(--back-c);
+			clip-path: polygon(100% 0, 90% 100%, 4% 98%, 0 10%);
+			content: "";
+		}
+	}
+}
+
+/* prettifying */
+* {
+	margin: 0;
+}
+
+html,
+body,
+section,
+.content,
+fieldset {
+	display: grid;
+}
+
+html {
+	min-height: 100%;
+}
+
+body {
+	--s: 1em;
+	--hl-c: light-dark(#bb3e03, #ee9b00);
+
+	grid-gap: calc(2 * var(--s));
+	grid-template-columns: repeat(auto-fit, minmax(25em, 1fr));
+	place-content: center;
+
+	color-scheme: light dark;
+
+	overflow-x: hidden;
+
+	padding: var(--s);
+
+	background: light-dark(#dedede, #212121);
+	color: light-dark(#212121, #dedede);
+	accent-color: var(--hl-c);
+
+	font: clamp(0.75em, 3vw, 1.25em) / 1.2 grandstander, sans-serif;
+}
+
+svg {
+	position: fixed;
+}
+
+section {
+	place-self: center;
+	padding-block: min(2vw, 2em);
+	width: min(100%, 30em);
+}
+
+.content {
+	--line-c: light-dark(#005f73, #94d2bd);
+	--back-c: light-dark(#ededed, #121212);
+	--shdw: drop-shadow(0.75em 0.75em 0.125em rgb(0 0 0/ 0.5));
+	align-self: center;
+	grid-gap: var(--s);
+	padding: 5.25em 4em;
+}
+
+img{
+    width: 90%;
+    height: auto;
+    border-radius: 1em;
+    align-self: center;
+}
+
+h1, h3 {
+	text-align: center;
+}
+
+h1{
+    border: solid #00ee7f 2px;
+    border-radius: 10px;
+    padding: 0.5lh;
+}
+
+.button{
+    display: flex;
+    justify-content:space-around;
+    margin-top: 20px;
+}
+
+button {
+	justify-self: flex-start;
+	border: none;
+	padding: 10px 30px;
+	border-radius: 10px;
+	background: #00ee7f;
+	color: var(--back-c);
+	font-weight: 900;
+    font-size: larger;
+}
