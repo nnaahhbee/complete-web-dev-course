@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+    p{
+        color: blue;
+    }
+
+    button{
+        background-color: blue;
+        color: white;
+        border-style: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+    } 
+
+    .rounded-corner{
+        border: solid black 3px;
+        border-style: dashed;
+        border-radius: 10px;
+    }
+
+    .styled-text{
+        color: red;
+        font-weight: bold;
+        font-size: 18px;
+        font-style: italic;
+    }
+
+    .box{
+        padding: 20px;
+        margin: 30px;
+        background-color: blue;
+    }
+
+    .circle{
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: red;
+    }
+
+    .shadow-box{
+        width: 200px;
+        height: 200px;
+        box-shadow: 10px 10px 15px gray;
+    }
+
+    .parent-container{
+        position: relative;   
+    }
+    .static-box{
+        position: static;
+        background-color: red;
+    }
+    .relative-box{
+        position: relative;
+        background-color: blue;
+        top: 50px;
+        left: 50px;
+    }
+    .absolute-box{
+        position: absolute;
+        background-color: green;
+        top: 30px;
+        left: 30px;
+    }
+
+    .flex-container{
+        background-color: yellow;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        height: 100vh;
+        width: 100%;
+        gap: 20px;
+        box-sizing: border-box;
+        padding: 20px;
+    }
+    .flex-item{
+        display: flex;
+        width: 150px;
+        height: 150px;
+        border: solid black 1px;
+        background-color: red;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .grid-container{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 10px;
+        width: 300px;
+        height: 300px;
+    }
+    .grid-item{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    
+   </style>
+</head>
+<body>
+    <!-- Change the color of a paragraph's text to blue. -->
+    <p>Hannah Joy</p>
+
+    <br/>
+
+    <!-- Style a button to have a blue background, white text, and rounded corners. -->
+    <button>Submit</button>
+
+    <br/> <br/>
+
+    <!-- Create a div with a dashed border and rounded corners. -->
+    <div  class="rounded-corner">  
+    </div>
+
+    <br/>
+
+    <!-- Create a paragraph of text and apply various font properties such as color, weight, size, and style. -->
+    <p class="styled-text">Hannah Joy</p>
+
+    <br/>
+
+    <!-- Create a Box with Padding and Margin -->
+    <div class="box"></div>
+
+    <br/>
+
+    <!-- Create a div element that appears as a perfect circle using the border-radius property. -->
+    <div class="circle"></div>
+
+    <br/>
+
+    <!-- Create a div element and apply a shadow effect using the box-shadow property. -->
+    <div class="shadow-box">  
+    </div>
+
+    <br/>
+
+    <!-- Create a layout where three elements are positioned using static, relative, and absolute positioning. -->
+    <div class="parent-container">
+        <div class="static-box"></div>
+        <div class="relative-box"></div>
+        <div class="absolute-box"></div>
+    </div>
+
+    <br/>
+
+    <!-- Create a simple responsive layout using Flexbox where three boxes are aligned horizontally, centered both vertically and horizontally within the container, and wrap to the next line on smaller screens. -->
+    <div class="flex-container">
+        <div class="flex-item"></div>
+        <div class="flex-item"></div>
+        <div class="flex-item"></div>
+    </div>
+
+    <br/>
+
+    <!-- Create a 3x3 grid layout where each cell contains a numbered box. The grid should be responsive, and the boxes should adjust their size based on the container's width. -->
+    <div class="grid-container">
+        <div style="background-color: red;" class="grid-item">1</div>
+        <div style="background-color: orange;" class="grid-item">2</div>
+        <div style="background-color: green;" class="grid-item">3</div>
+        <div style="background-color: blue;" class="grid-item">4</div>
+        <div style="background-color: yellow;" class="grid-item">5</div>
+        <div style="background-color: violet;" class="grid-item">6</div>
+        <div style="background-color: gray;" class="grid-item">7</div>
+        <div style="background-color: brown;" class="grid-item">8</div>
+        <div style="background-color: pink;" class="grid-item">9</div>
+    </div>
+    
+ </body>
+</html>
