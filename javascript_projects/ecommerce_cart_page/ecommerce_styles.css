@@ -67,6 +67,27 @@ h1, h2{
     text-align: right;
 }
 
+.cartItem{
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #333333;
+    margin-bottom: 10px;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+}
+
+.cartItem button{
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    background-color: #d43793;
+    color: white;
+    transition: background-color 0.3s;
+
+}
+
 #checkout-btn{
     margin-top: 20px;
     padding: 5px 10px;
