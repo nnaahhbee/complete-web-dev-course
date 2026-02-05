@@ -1,0 +1,86 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(19, 17, 17);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+}
+
+.container{
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #1E1E1E;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    width:400px
+}
+
+h1, h2, h3{
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+input[type="text"], input[type="number"]{
+    width: 45%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    color: white;
+    background-color: #333333;
+    margin: 3px;
+}
+
+button{
+    padding: 3px;
+    background-color: #d153c0;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
+button:hover{
+    background-color: #b0419a;
+}
+
+#expense-list{
+    list-style-type: none;
+    padding: 0;
+
+}
+
+#expense-list li{
+    padding: 10px;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    border-radius: 5px;
+    background-color: #333333;
+    margin-bottom: 10px;
+
+}
+
+#total{
+    text-align: right;
+}
+
+.hidden{
+    display: none;
+}
