@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
    // Event listener for deleting an expense
    expenseList.addEventListener('click', (e) => {
     if(e.target.tagName === 'BUTTON'){
-       const expenseId = (e.target.getAttribute('data-id'));
+       const expenseId = parseInt(e.target.getAttribute('data-id'));
        expenses = expenses.filter(expense => expense.id !== expenseId);
 
        saveExpensesToLocal();
