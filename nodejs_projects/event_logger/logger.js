@@ -1,15 +1,17 @@
 const fs = require('fs');
 const os = require('os');
+const path = require("path");
+
 const EventEmitter = require('events');
 
 class Logger extends EventEmitter{
     log(message){
-        this.emit('messsage', {message})
+        this.emit('message', {message})
     }
 }
 
 const logger = new Logger();
-const logFile = './eventlog.txt';
+const logFile = path.join(__dirname, "eventlog.txt");
 
 const logToFile = (event) => {
     const logMessage = `${new Date().toISOString()} - ${event.message} \n`;
