@@ -1,5 +1,2 @@
-# Ignore VS Code workspace settings folder inside the HTML & CSS projects folder
-.vscode
-assets
 .vs
-tasks.json
+.vscode
