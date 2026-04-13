@@ -11,9 +11,11 @@ const sendEmail = async (options) => {
             name: "Task Manager",
             link: "https://taskmanager.com/"
         }
-    })
+    });
 
+    //generate email content
     const emailTextual = mailGenerator.generatePlaintext(options.mailgenContent);
+    //generate HTML content from mailgen template
     const emailhtml = mailGenerator.generate(options.mailgenContent);
 
     const transporter = nodemailer.createTransport({
@@ -23,7 +25,7 @@ const sendEmail = async (options) => {
             user: process.env.MAILTRAP_SMTP_USER,
             pass: process.env.MAILTRAP_SMTP_PASS
         }
-    })
+    });
 
     const mail = {
         from: "mail.taskmanager@example.com",
@@ -43,6 +45,7 @@ const sendEmail = async (options) => {
 }
 
 
+//email templates for email verification and forgot password
 const emailVerificationTemplate = (username, verificationUrl) => {
     return {
         body: {
