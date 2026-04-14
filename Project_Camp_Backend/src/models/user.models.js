@@ -64,11 +64,10 @@ const userSchema = new Schema({
 );
 
 //hook to hash password before saving user
-userSchema.pre("save", async function(next){
-    if(!this.isModified("password")) return next();
+userSchema.pre("save", async function(){
+    if(!this.isModified("password")) return;
 
-    this.password = await bcrypt.hash(this.password, 10)
-    next();
+    this.password = await bcrypt.hash(this.password, 10);
 });
 
 userSchema.methods.isPasswordMatch = async function(password){
@@ -113,7 +112,7 @@ userSchema.methods.generateTemporaryToken = function(){
 
     const tokenExpiry = Date.now() + (20*60*1000); //20 minutes
 
-    return {unhashedToken, hashedToken, tokenExpiry
+    return {unHashedToken, hashedToken, tokenExpiry
     }
 };
 

@@ -44,7 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
     //generate hashed and unhashed token for email verification
-    const {unhashedToken, hashedToken, tokenExpiry} = user.generateTemporaryToken();
+    const {unHashedToken, hashedToken, tokenExpiry} = user.generateTemporaryToken();
 
     //save hashed token and expiry to user document
     user.emailVerificationToken = hashedToken;
@@ -57,7 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
         subject: "Please verify your email",
         mailgenContent: emailVerificationTemplate(
             user.username, 
-            `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unhashedToken}`
+            `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`
         ),
     });
  
