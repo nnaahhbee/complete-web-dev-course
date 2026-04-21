@@ -131,6 +131,4 @@ const login = asyncHandler(async (req, res) => {
 });
 
 
-
-
 export {registerUser, login};
