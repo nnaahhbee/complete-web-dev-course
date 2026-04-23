@@ -22,6 +22,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
     }
 }
 
+//method for registering a new user
 const registerUser = asyncHandler(async (req, res) => {
     const {email, username, password, role} = req.body
 
@@ -131,4 +132,31 @@ const login = asyncHandler(async (req, res) => {
 });
 
 
-export {registerUser, login};
+//method for securely logging out the user
+const logoutUser = asyncHandler(async (req, res) => {
+    await User.findByIdAndUpdate(req.user._id,
+        {
+            $set: {
+                refreshToken: null
+            }
+        },
+        {
+            new: true
+        },
+    );
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+    return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(
+        new ApiResponse(200, {}, "User logged out")
+    )
+
+});
+
+
+export {registerUser, login, logoutUser};

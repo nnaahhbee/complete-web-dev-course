@@ -3,6 +3,7 @@ import { ApiError } from '../utils/api_errors.js';
 import { asyncHandler } from '../utils/async_handler.js';
 import jwt from 'jsonwebtoken';
 
+//middleware to verify JWT token and protect routes
 export const verifyJWT = asyncHandler(async (req, res, next) => {
   const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 
@@ -12,7 +13,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
   try{
     const decodedToken =jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    const user =await User.findById(decodedToken?.id).select("-password -refreshToken -emailVerificationToken -emailVerificationTokenExpiry",);
+    const user =await User.findById(decodedToken?._id).select("-password -refreshToken -emailVerificationToken -emailVerificationTokenExpiry",);
 
     if(!user){
     throw new ApiError(401, "Invalid Access Token");
@@ -21,9 +22,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
    req.user = user
    next();
 
-  }catch(err){
-    if(!token){
+  }catch(error){
     throw new ApiError(401, "Invalid Access Token");
   }
-  }
-})
+});
