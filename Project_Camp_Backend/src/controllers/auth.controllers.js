@@ -51,8 +51,10 @@ const registerUser = asyncHandler(async (req, res) => {
     user.emailVerificationToken = hashedToken;
     user.emailVerificationTokenExpiry = tokenExpiry;
 
+    //save the user document
     await user.save({validateBeforeSave: false});
 
+    //send verification email to user
     await sendEmail ({
         email: user?.email,
         subject: "Please verify your email",
@@ -62,6 +64,8 @@ const registerUser = asyncHandler(async (req, res) => {
         ),
     });
  
+
+    //fetch the created user without sensitive information to send in response
     const createdUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationTokenExpiry");
 
     if(!createdUser){
@@ -159,6 +163,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 
+
+//method for getting the currently logged in user
 const getCurrentUser = asyncHandler(async (req, res) => {
     return res
     .status(200)
@@ -172,6 +178,8 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 });
 
+
+//method for verifying email address of the user
 const verifyEmail = asyncHandler(async (req, res) => {
 
    //get the token from params
@@ -223,12 +231,53 @@ const verifyEmail = asyncHandler(async (req, res) => {
  });
 
 
- 
-// const getCurrentUser = asyncHandler(async (req, res) => {
 
-// });
+//method for resending email verification token to user email
+const resendEmailVerification = asyncHandler(async (req, res) => {
 
+  //fetch the user from database
+  const user = await User.findByIdAndUpdate(req.user._id);
 
+  //if user is not found, throw error
+  if(!user){
+    throw new ApiError(404, "User not found");
+  }
+
+  //if user is already verified, throw error
+  if(user.isEmailVerified){
+    throw new ApiError(409, "Email is already verified");
+  }
+
+    //generate hashed and unhashed token for email verification
+    const {unHashedToken, hashedToken, tokenExpiry} = user.generateTemporaryToken();
+
+    //save hashed token and expiry to user document
+    user.emailVerificationToken = hashedToken;
+    user.emailVerificationTokenExpiry = tokenExpiry;
+
+    //save the user document to database
+    await user.save({validateBeforeSave: false});
+
+    //send verification email to user
+    await sendEmail ({
+        email: user?.email,
+        subject: "Please verify your email",
+        mailgenContent: emailVerificationTemplate(
+            user.username, 
+            `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`
+        ),
+    });
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "Verification email resent successfully, please check your email"
+        )
+    )
+});
 
 
 
