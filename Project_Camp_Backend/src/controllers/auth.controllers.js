@@ -3,6 +3,7 @@ import { ApiResponse } from "../utils/api_response.js";
 import { asyncHandler } from "../utils/async_handler.js";
 import { ApiError } from '../utils/api_errors.js';
 import { emailVerificationTemplate, sendEmail } from '../utils/mail.js';
+import jwt from 'jsonwebtoken';
 
 
 //helper function to generate access and refresh tokensand save refresh token to user document
@@ -111,7 +112,7 @@ const login = asyncHandler(async (req, res) => {
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationTokenExpiry");
 
  
-    // set the cookie
+   //cookie security options
     const options = {
         httpOnly: true,
         secure: true
@@ -148,6 +149,8 @@ const logoutUser = asyncHandler(async (req, res) => {
             new: true
         },
     );
+
+    //cookie security options
     const options = {
         httpOnly: true,
         secure: true
@@ -281,8 +284,70 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
 
 
 
+//method for refreshing access token
+const refreshAccessToken = asyncHandler(async (req, res) => {
+   
+   //get the refresh token from cookies or request body
+   const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+
+   //if refresh token is not present, throw error
+   if(!incomingRefreshToken){
+    throw new ApiError(401, "Unauthorized, refresh token is missing");
+   }
+
+   //if refresh token is present, verify the token
+   try{
+    const decodedToken = jwt.verify(
+        incomingRefreshToken, 
+        process.env.REFRESH_TOKEN_SECRET
+    );
+
+    //if token is valid, find the user with the id from token 
+    const user = await User.findById(decodedToken?._id);
+    if(!user){
+    throw new ApiError(401, "Invalid refresh token, user not found");
+   }
+
+   //and check if refresh token in database matches the incoming refresh token
+   if(incomingRefreshToken !== user?.refreshToken){
+    throw new ApiError(401, "Refresh token is expired");
+   }
+
+   //cookie security options
+   const options = {
+    httpOnly: true,
+    secure: true
+   }
+
+   //if token is valid, generate new access and refresh tokens
+   const {accessToken, refreshToken: newRefreshToken} = await generateAccessAndRefreshTokens(user._id);
+
+   //save the new refresh token to user document
+   user.refreshToken = newRefreshToken;
+   await user.save();
+
+
+   return res
+   .status(200)
+   .cookie("accessToken", accessToken, options)
+   .cookie("refreshToken", newRefreshToken, options)
+   .json(
+    new ApiResponse(
+        200,
+        {accessToken, refreshToken: newRefreshToken},
+        "Access token refreshed successfully"
+    )
+   )
+
+   }catch(error){
+    throw new ApiError(401, "Invalid refresh token");
+   }
+   
+ });
+
+
 // const getCurrentUser = asyncHandler(async (req, res) => {
 
 // });
 
-export {registerUser, login, logoutUser, getCurrentUser, verifyEmail};
+export {registerUser, login, logoutUser, getCurrentUser, verifyEmail, resendEmailVerification, refreshAccessToken};
