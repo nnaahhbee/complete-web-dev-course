@@ -2,7 +2,7 @@ import {User} from '../models/user.models.js';
 import { ApiResponse } from "../utils/api_response.js";
 import { asyncHandler } from "../utils/async_handler.js";
 import { ApiError } from '../utils/api_errors.js';
-import { emailVerificationTemplate, sendEmail } from '../utils/mail.js';
+import { emailVerificationTemplate, forgotPasswordTemplate, sendEmail } from '../utils/mail.js';
 import jwt from 'jsonwebtoken';
 
 
@@ -22,6 +22,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
     }
 }
+
 
 //method for registering a new user
 const registerUser = asyncHandler(async (req, res) => {
@@ -343,11 +344,60 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid refresh token");
    }
    
- });
+});
+
+
+//method for handling forgot password request
+const forgotPasswordRequest = asyncHandler(async (req, res) => {
+    //get email from request body
+   const {email} = req.body;
+
+   const user = await User.findOne({email});
+
+   if(!user){
+    throw new ApiError(404, "User with this email does not exist");
+   }
+
+   //generate hashed and unhashed token for password reset
+   const {unHashedToken, hashedToken, tokenExpiry} = user.generateTemporaryToken();
+
+
+   //save hashed token and expiry to user document
+   user.forgotPasswordToken = hashedToken;
+   user.forgotPasswordTokenExpiry = tokenExpiry;
+
+   await user.save({validateBeforeSave: false});
+
+
+   //send password reset instructions to user email
+   await sendEmail ({
+    email: user?.email,
+    subject: "Password Reset Request",
+    mailgenContent: forgotPasswordTemplate(
+        user.username, 
+        `${process.env.FORGOT_PASSWORD_REDIRECT_URL}/${unHashedToken}`,
+    ),  
+   });
+
+
+   return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "Password reset instructions sent to your email, please check your email"
+        )
+    )
+
+});
+
 
 
 // const getCurrentUser = asyncHandler(async (req, res) => {
 
 // });
 
-export {registerUser, login, logoutUser, getCurrentUser, verifyEmail, resendEmailVerification, refreshAccessToken};
+
+
+export {registerUser, login, logoutUser, getCurrentUser, verifyEmail, resendEmailVerification, refreshAccessToken, forgotPasswordRequest};
