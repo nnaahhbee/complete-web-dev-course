@@ -4,6 +4,7 @@ import { asyncHandler } from "../utils/async_handler.js";
 import { ApiError } from '../utils/api_errors.js';
 import { emailVerificationTemplate, forgotPasswordTemplate, sendEmail } from '../utils/mail.js';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 
 //helper function to generate access and refresh tokensand save refresh token to user document
@@ -394,10 +395,59 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
 
 
 
+//method for resetting password using forgot password token
+const resetForgotPassword = asyncHandler(async (req, res) => {
+    
+    //get the token from params and new password from request body
+    const {resetToken} = req.params;
+    const {newPassword} = req.body;
+
+    
+    //hashes a token using the SHA-256 algorithm
+    let hashedToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+    
+    //find the user with the hashed token and check if token is not expired
+    const user =await User.findOne({
+        forgotPasswordToken: hashedToken,
+        forgotPasswordTokenExpiry: {$gt: Date.now()} //token expiry should be greater than current time
+    });
+
+    if(!user){
+        throw new ApiError(489, "Token is expired or invalid");
+    }
+
+
+    //if token is valid, update the user document to set new password and remove the token and expiry
+    user.forgotPasswordTokenExpiry = undefined;
+    user.forgotPasswordToken = undefined;
+
+    user.password = newPassword;
+    await user.save({ validateBeforeSave: false });
+
+    
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "Password reset successfully, you can now login with your new password"
+        )
+    )
+
+});
+
+
+
+
+
 // const getCurrentUser = asyncHandler(async (req, res) => {
 
 // });
-
 
 
 export {registerUser, login, logoutUser, getCurrentUser, verifyEmail, resendEmailVerification, refreshAccessToken, forgotPasswordRequest};
