@@ -9,7 +9,7 @@ const projectMemberSchema = new Schema({
         required: true
     },
     project: { 
-        type: Schema.Types.ObjectId, // Reference to the User model
+        type: Schema.Types.ObjectId, // Reference to the project model
         ref: 'Project',
         required: true
     },
