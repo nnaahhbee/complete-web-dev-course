@@ -10,7 +10,74 @@ import { UserRolesEnum } from '../utils/constants.js';
 
 //method to get the list of user project
 const getProjects = asyncHandler(async (req, res) => {
-    //test
+    const projects = await ProjectMember.aggregate([
+        
+        //aggregation match for getting the projects of the user
+      {
+
+        $match: {
+            user: new mongoose.Types.ObjectId(req.user._id),
+        },
+      },
+      {
+        //aggregation for getting the project details and the number of members in each project
+        $lookup: {
+            from: "projects",
+            LocalField: "projects",
+            foreignField: "_id",
+            as: "projects",
+            pipeline: [
+                {
+                    $lookup: {
+                        from: "projectmembers",
+                        localField: "_id",
+                        foreignField: "projects",
+                        as: "projectmembers",
+                    },
+                },
+                {
+                    $addFields: {
+                        members: {
+                            $size: "$projectmembers"
+                        },
+                    },
+                },
+            ]
+
+        },
+      },
+
+      //aggregation for unwinding the project array
+      {
+        $unwind: "$project"
+      },
+
+      //aggregation for projecting the required fields
+      {
+        $project: {
+            project: {
+                _id: 1,
+                name: 1, 
+                description: 1,
+                members: 1,
+                createdAt: 1,
+                createdBy: 1,
+            },
+            role: 1,
+            _id: 0,
+        },
+      },
+    ]);
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            projects,
+            "Projects fetched successfully"
+        )
+    )
 });
 
 
