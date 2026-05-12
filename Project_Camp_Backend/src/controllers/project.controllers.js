@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/api_response.js";
 import { asyncHandler } from "../utils/async_handler.js";
 import { ApiError } from '../utils/api_errors.js';
 import mongoose from 'mongoose';
+import { UserRolesEnum } from '../utils/constants.js';
 
 
 //method to get the list of user project
