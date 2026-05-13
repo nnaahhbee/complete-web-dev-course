@@ -226,7 +226,67 @@ const addMembersToProject = asyncHandler(async (req, res) => {
 
 // method to get project members
 const getProjectMembers = asyncHandler(async (req, res) => {
-    //test
+    const {projectId} = req.params;
+    const project = await Project.findById(req.params);
+
+    if(!project){
+        throw new ApiError(404, "Project not found");
+    }
+
+
+    //aggregation for getting the project members and their details
+    const projectMembers = await ProjectMember.aggregate([
+        {
+            $match: {
+                project: new mongoose.Types.ObjectId(projectId),
+            },         
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user",
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 1,
+                            username: 1,
+                            fullName: 1,
+                            avatar: 1,
+                        },
+                    },
+                ]
+            },
+        },
+        {
+          $addFields: {
+            user: {
+                $arrayElemAt: ["$user", 0]
+            },
+          },  
+        },
+        {
+            $project: {
+                project: 1,
+                user: 1,
+                role: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                _id: 0,
+            },
+        },
+    ]);
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            projectMembers,
+            "Project members fetched successfully"
+        )
+    )
 });
 
 
