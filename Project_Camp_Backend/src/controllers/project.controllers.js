@@ -14,16 +14,16 @@ const getProjects = asyncHandler(async (req, res) => {
         
         //aggregation match for getting the projects of the user
       {
-
         $match: {
             user: new mongoose.Types.ObjectId(req.user._id),
         },
       },
+
+      //aggregation for getting the project details and the number of members in each project
       {
-        //aggregation for getting the project details and the number of members in each project
         $lookup: {
             from: "projects",
-            LocalField: "projects",
+            localField: "projects",
             foreignField: "_id",
             as: "projects",
             pipeline: [
@@ -49,12 +49,12 @@ const getProjects = asyncHandler(async (req, res) => {
 
       //aggregation for unwinding the project array
       {
-        $unwind: "$project"
+        $unwind: "$projects"
       },
 
       //aggregation for projecting the required fields
       {
-        $project: {
+        $projects: {
             project: {
                 _id: 1,
                 name: 1, 
@@ -83,7 +83,23 @@ const getProjects = asyncHandler(async (req, res) => {
 
 //method to get project details
 const getProjectsById = asyncHandler(async (req, res) => {
-    //test
+    const { projectId } = req.params;
+    const project = await Project.findById(projectId);
+
+    if(!project){
+        throw new ApiError(404, "Project not found");
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            project,
+            "Project details fetched successfully"
+        )
+    );
+    
 });
 
 
