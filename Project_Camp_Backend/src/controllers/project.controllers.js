@@ -134,7 +134,7 @@ const createProject = asyncHandler(async (req, res) => {
 
 
 // method for updating a project
-const updateproject = asyncHandler(async (req, res) => {
+const updateProject = asyncHandler(async (req, res) => {
     const { name, description } = req.body; 
     const { projectId } = req.params;
 
@@ -376,7 +376,7 @@ export{
     getProjects,
     getProjectsById,
     createProject,
-    updateproject,
+    updateProject,
     deleteProject,
     addMembersToProject,
     getProjectMembers,
