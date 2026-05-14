@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+import {AvailabeUserRole} from "../utils/constants.js";
 
 
 const userRegisterValidator = () => {
@@ -31,12 +32,12 @@ const userRegisterValidator = () => {
 const userLoginValidator = () => {
     return [
         body("email")
-        .optional()
-        .isEmail()
-        .withMessage("Email is invalid"),
+            .optional()
+            .isEmail()
+            .withMessage("Email is invalid"),
         body("password")
-        .notEmpty()
-        .withMessage("Password is required"),
+            .notEmpty()
+            .withMessage("Password is required"),
         
     ];
 };
@@ -45,8 +46,12 @@ const userLoginValidator = () => {
 // Validator for changing current password
 const userChangeCurrentPasswordValidator = () => {
     return [
-        body("oldPassword").notEmpty().withMessage("Old password is required"),
-        body("newPassword").notEmpty().withMessage("New password is required"),
+        body("oldPassword")
+            .notEmpty()
+            .withMessage("Old password is required"),
+        body("newPassword")
+            .notEmpty()
+            .withMessage("New password is required"),
     ]
 };
 
@@ -55,10 +60,10 @@ const userChangeCurrentPasswordValidator = () => {
 const userForgotPasswordValidator = () => {
     return[
         body("email")
-        .notEmpty()
-        .withMessage("Email is required")
-        .isEmail()
-        .withMessage("Email is invalid"),  
+            .notEmpty()
+            .withMessage("Email is required")
+            .isEmail()
+            .withMessage("Email is invalid"),  
     ]
 };
 
@@ -67,14 +72,45 @@ const userForgotPasswordValidator = () => {
 const userResetForgotPasswordValidator = () => {
     return[
         body("newPassword")
-        .notEmpty()
-        .withMessage("New password is required"),
+            .notEmpty()
+            .withMessage("New password is required"),
     ]
 };
  
 
+// Validator for creating a project
+const createProjectValidator = () => {
+    return[
+        body("name")
+            .notEmpty()
+            .withMessage("Project name is required"),
+        body("description")
+            .optional()
+    ]
+}
+
+
+// Validator for adding a member to a project
+const addMemberToProjectValidator = () => {
+    return[
+        body("email")
+            .trim()
+            .notEmpty()
+            .withMessage("Email is required")
+            .isEmail()
+            .withMessage("Email is invalid"),
+        body("role")
+            .notEmpty()
+            .withMessage("Role is required")
+            .isIn(AvailabeUserRole)
+            .withMessage("Role is invalid")
+
+    ]
+}
+
 export{
     userRegisterValidator, userLoginValidator, userChangeCurrentPasswordValidator,
     userForgotPasswordValidator,
-    userResetForgotPasswordValidator
+    userResetForgotPasswordValidator, 
+    createProjectValidator
 }
