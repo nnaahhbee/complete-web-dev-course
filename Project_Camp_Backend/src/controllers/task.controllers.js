@@ -10,6 +10,7 @@ import { UserRolesEnum } from '../utils/constants.js';
 import { AvailableUserRole } from '../utils/constants.js';
 
 
+//method to get all tasks of a project
 const getTasks = asyncHandler(async (req, res) => {
     const {projectId} = req.params;
     const project = await Project.findById(projectId);
@@ -18,6 +19,7 @@ const getTasks = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Project not found");
     }
 
+    //populate the assignedTo field with the user's avatar, username and fullName
     const tasks = await Task.find({
         project: new mongoose.Types.ObjectId(projectId)
     }).populate("assignedTo", "avatar username fullName");
@@ -31,6 +33,7 @@ const getTasks = asyncHandler(async (req, res) => {
 });
 
 
+//method to create a task
 const createTask = asyncHandler(async (req, res) => {
     const { title, description, assignedTo, status  } = req.body;
     const { projectId } = req.params;
@@ -69,7 +72,92 @@ const createTask = asyncHandler(async (req, res) => {
 
 
 const getTaskById = asyncHandler(async (req, res) => {
-    //test
+    const {taskId} = req.params;
+
+    //aggregation pipeline to get the task by id
+    const task = await Task.aggregate([
+        //match the task by id
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(taskId)
+            }
+        },
+
+        //lookup to get the assignedTo user details
+        {
+            $lookup:{
+                from: "users",
+                localField: "assignedTo",
+                foreignField: "_id",
+                as: "assignedTo",
+                pipeline: [
+                    {
+                        _id: 1,
+                        username: 1,
+                        fullName: 1,
+                        avatar: 1
+                    }
+                ]
+            }
+        },
+
+        //lookup to get the subtasks of the task
+        {
+            $lookup:{
+                from: "subtasks",
+                localField: "_id",
+                foreignField: "task",
+                as: "subtasks",
+                pipeline: [
+                    {
+                        $lookup:{
+                            from: "users",
+                            localField: "createdBy",
+                            foreignField: "_id",
+                            as: "createdBy",
+                            pipeline: [
+                                {
+                                    $project: {
+                                    _id: 1,
+                                    username: 1,
+                                    fullName: 1,
+                                    avatar: 1
+                                   }
+                                }  
+                            ]
+                        },
+                    },
+                    {
+                        $addFields: {
+                            createdBy: {
+                                $arrayElementAt: ["$createdBy", 0]
+                            }
+                        }
+                    },
+                ]
+            },
+        },
+
+        //addFields to get the assignedTo user details as an object instead of an array
+        {
+            $addFields: {
+                assignedTo: {
+                    $arrayElementAt: ["$assignedTo", 0]
+                }
+            }
+        },
+    ]);
+
+
+    if(!task || task.length === 0){
+        throw new ApiError(404, "Task not found");
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, task[0], "Task fetched successfully")
+    )
 });
 
 
