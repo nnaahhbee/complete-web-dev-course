@@ -1,0 +1,23 @@
+{
+  "name": "express_course",
+  "version": "1.0.0",
+  "description": "express crash course",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "express",
+    "postman"
+  ],
+  "author": "hannabuilds",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
