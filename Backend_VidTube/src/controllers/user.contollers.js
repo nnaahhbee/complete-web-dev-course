@@ -5,6 +5,25 @@ import {deleteFromCloudinary, uploadToCloudinary} from '../utils/cloudinary.js'
 import {apiResponse} from '../utils/apiResponse.js'
 
 
+//helper method
+const generateAccessAndResfreshToken = async(userId) => {
+ try {
+    const user = User.findById(userId)
+    if(!user){
+       throw new apiError(400, "User not found");
+    }
+   
+    const accessToken = user.generateAccessToken()
+    const refreshToken = user.generateRefreshToken()
+   
+    user.refreshToken = refreshToken
+    await user.save({validateBeforeSave: false})
+    return {accessToken, refreshToken}
+ } catch (error) {
+    throw new apiError(500, "Something went wrong while generating access and refresh tokoens")   
+ }
+}
+
 const registerUser = asyncHandler (async (req, res) => {
     //accept data from the user
     const {fullname, email, username, password} = req.body
@@ -100,6 +119,8 @@ const registerUser = asyncHandler (async (req, res) => {
     }
 
 });
+
+
 
 
 export {
