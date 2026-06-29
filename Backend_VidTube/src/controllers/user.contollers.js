@@ -24,6 +24,7 @@ const generateAccessAndResfreshToken = async(userId) => {
  }
 }
 
+
 const registerUser = asyncHandler (async (req, res) => {
     //accept data from the user
     const {fullname, email, username, password} = req.body
@@ -121,8 +122,58 @@ const registerUser = asyncHandler (async (req, res) => {
 });
 
 
+const loginUser = asyncHandler(async (req, res) => {
+    //get data from body
+    const {email, username, password} = req.body
+
+    //validation
+    if(!email){
+        throw new apiError(400, "Email is required")
+    }
+
+    //check for existing user based either on username or email
+    const user = await User.findOne({
+        $or: [{username}, {email}]
+    })
+
+    if(!user){
+        throw new apiError(400, "User not found")
+    }
+
+    //validate password
+    const isPasswordValid = await user.isPasswordCorrect(password)
+
+    if(!isPasswordValid){
+        throw new apiError(400, "Invalid credentials")
+    }
+
+    const {accessToken, refreshToken} = await
+    generateAccessAndResfreshToken(user._id)
+
+    const loggedInUser = await User.findById(user._id)
+    .select("-password, -refreshToken"); //return the object without the password and refreshToken field
+
+    if(!loggedInUser){
+        throw new apiError(400, "User not found")
+    }
+
+    const options = {
+        httpOnly: true, //make the cookie non modifiable to client side
+        secure: process.env.NODE_ENV === "production",
+    }
+
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(new apiResponse(
+        200, 
+        {user: loggedInUser, accessToken, refreshToken}, 
+        "User logged in successfully"))
+})
 
 
 export {
-    registerUser
+    registerUser,
+    loginUser 
 }
