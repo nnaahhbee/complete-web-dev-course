@@ -1,8 +1,9 @@
 import {asyncHandler} from '../utils/asyncHandler.js';
 import {apiError} from '../utils/apiError.js';
 import {User} from '../models/user.models.js';
-import {deleteFromCloudinary, uploadToCloudinary} from '../utils/cloudinary.js'
-import {apiResponse} from '../utils/apiResponse.js'
+import {deleteFromCloudinary, uploadToCloudinary} from '../utils/cloudinary.js';
+import {apiResponse} from '../utils/apiResponse.js';
+import jwt from 'jsonwebtoken';
 
 
 //helper method
@@ -154,7 +155,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .select("-password, -refreshToken"); //return the object without the password and refreshToken field
 
     if(!loggedInUser){
-        throw new apiError(400, "User not found")
+        throw new apiError(500, "Log in failed")
     }
 
     const options = {
@@ -170,10 +171,60 @@ const loginUser = asyncHandler(async (req, res) => {
         200, 
         {user: loggedInUser, accessToken, refreshToken}, 
         "User logged in successfully"))
-})
+});
+
+const refreshAccessToken = asyncHandler(async (req, res) => {
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+
+    if(!incomingRefreshToken){
+        throw new apiError(401, "Refresh token is required")
+    }
+
+    //verify the incoming refresh token
+    try{
+        const decodedToken = jwt.verify(
+            incomingRefreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        )
+
+        const user = await User.findById(decodedToken?._id)
+
+        if(!user){
+            throw new apiError(401, "Invalid refresh token")
+        }
+
+        //check if the incoming refresh token matches the one stored in the database
+        if(incomingRefreshToken !== user?.refreshToken){
+            throw new apiError(401, "Invalid refresh token")
+        }
+
+        const options = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production"
+        }
+
+        //generate new access token and refresh token
+        const {accessToken, refreshToken: newRefreshToken} =
+        await generateAccessAndResfreshToken(user._id)
+
+        return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", newRefreshToken, options)
+        .json(new apiResponse(
+            200, {accessToken, refreshToken: newRefreshToken}, 
+            "Access token refreshed successfully"
+        ))
+
+    }catch(error){
+        throw new apiError(500, "Something went wrong while refreshing access token")
+
+    }
+});
 
 
 export {
     registerUser,
-    loginUser 
+    loginUser,
+    refreshAccessToken
 }
