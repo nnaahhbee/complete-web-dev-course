@@ -371,6 +371,143 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     .json(new apiResponse(200, user, "Cover image updated successfully"))
 });
 
+//get user channel profile
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+    //grab info from url to determine which user to fetch
+    const { username } = req.params
+
+    //validation 
+    if(!username?.trim()){
+        throw new apiError(400, "Username is required")
+    }
+
+    //grab channel info
+    const channel = await User.aggregate(
+        [  //get the user with the given username
+            {
+                $match: {
+                    username: username?.toLowerCase()
+                },
+            },
+            //lookup the subscribers of the channel
+            {
+                $lookup: {
+                    from: "subscriptions", //collection name in mongodb
+                    localField: "_id",
+                    foreignField: "channel",
+                    as: "subscribers"
+                }
+            },
+            //collect all the channel's a subscribers have subscribed to
+            {
+                $lookup: {
+                    from: "subscriptions",
+                    localField: "_id",
+                    foreignField: "subscriber",
+                    as: "subscribeTo"
+                }
+
+            },
+            //count the number of subscribers and channels subscribed to
+            {
+                $addFields: {
+                    subscribersCount: {
+                        $size: "$subscribers"
+                    },
+                    channelsSubscribedToCount: {
+                        $size: "$subscribeTo"
+                    },
+                    isSubscribed: {
+                        $cond: {
+                            if: {
+                                $in: [req.user?._id, "$subscribers.subscriber"]
+                            },
+                            then: true,
+                            else: false
+                        },
+                    }
+                }
+            },
+            //project only the necessary data - what we want to return to the client
+            {
+                $project: {
+                    fullname: 1,
+                    username: 1,
+                    avatar: 1,
+                    coverImage: 1,
+                    subscribersCount: 1,
+                    channelsSubscribedToCount: 1,
+                    isSubscribed: 1,
+                    email: 1,
+                }
+            },
+        ]
+    )
+
+    //check if the channel exists 
+    if(!channel?.length){
+    throw new apiError(404, "Channel not found")
+    }
+
+    return res
+    .status(200)
+    .json(new apiResponse(200, channel[0], "Channel profile fetched successfully"))
+
+});
+
+//get watch history of the logged in user
+const getWatchHistory = asyncHandler(async (req, res) => {
+    //get the watch history of the logged in user
+    const user = await User.aggregate([
+        //match the user by id
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user?._id)
+            },
+        },
+        //lookup the videos in the watch history
+        {
+            $lookup: {
+                from: "videos",
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
+                //lookup the owner of each video in the watch history
+                pipeline: [ 
+                {
+                    $lookup: { 
+                        from: "users",
+                        localField: "owner",
+                        foreignField: "_id",
+                        as: "owner",
+                        //project only the necessary fields from the owner object
+                        pipeline: [{
+                            $project: {
+                                fullname: 1,
+                                username: 1,
+                                avatar: 1,
+                            },
+                        }]
+                    },
+                },
+                {
+                //add the owner field to the video object
+                $addFields: {
+                    owner: {
+                        $first: "$owner"
+                    }
+                }
+                }
+            ]
+            },
+        }
+    ]);
+
+    return res
+    .status(200)
+    .json(new apiResponse(200, user[0]?.watchHistory, "Watch history fetched successfully"))
+
+});
 
 export {
     registerUser,
@@ -381,5 +518,7 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile,
+    getWatchHistory
 }
