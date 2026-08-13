@@ -6,6 +6,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 import Layout from './Layout.jsx'
 import Home from './components/Home/Home.jsx'
 import About from './components/About/About.jsx'
+import User from './components/User/User.jsx'
 
 //routes in react to load a path
 const router = createBrowserRouter(
@@ -13,6 +14,9 @@ const router = createBrowserRouter(
       <Route path='/' element={<Layout />}>
         <Route path='' element={<Home />}/>
         <Route path='about' element={<About />}/>
+        <Route path="user/" element={<User />}> <Route path=':userid/' element={<User />} />
+        </Route>  {/*for dynamic routing we can use the :userid in the path and then we can use the useParams hook to get the userid from the url */}
+        
       </Route>
   )
 )
