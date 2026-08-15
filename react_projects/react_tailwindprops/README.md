@@ -1,16 +1,33 @@
-# React + Vite
+﻿# React Tailwind Background Changer (Learning Project)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A minimal learning project that demonstrates how to build a small React app with Tailwind CSS and Vite. The app provides a simple UI to change the page background color using React state and Tailwind utility classes.
 
-Currently, two official plugins are available:
+> This project is for learning purposes only.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Interactive background color changer controlled by React state (useState).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech stack
 
-## Expanding the ESLint configuration
+- React (functional components + hooks)
+- Vite (dev server + build tool)
+- Tailwind CSS (utility-first styling)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Extending & exercises (for learners)
+
+Try the following exercises to learn more:
+
+1. Add more color buttons and label them with custom hex values.
+2. Replace inline style usage with CSS custom properties (set a --bg CSS variable on the root and update it from React).
+3. Persist the selected color in localStorage so the choice remains after a refresh.
+4. Make the control bar keyboard-accessible: allow changing colors with left/right arrow keys and Enter to apply.
+5. Animate background transitions with CSS transitions or by integrating Tailwind's transition utilities.
+6. Extract the control bar into a reusable component that accepts a list of colors via props, e.g., <ColorBar colors={[...]} onChange={...} />.
+7. Add accessibility: add aria-labels to buttons and ensure sufficient contrast for button text.
+
+## Possible improvements
+
+- Use a color picker input to allow arbitrary colors rather than a fixed set of buttons.
+- Add light/dark mode toggling that updates the page semantics and accessible contrast.
+- Use a CSS-in-JS library or Tailwind plugin to style dynamic colors if needed for a larger project.
