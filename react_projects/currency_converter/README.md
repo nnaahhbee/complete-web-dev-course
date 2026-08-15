@@ -1,16 +1,75 @@
-# React + Vite
+# Currency Converter
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React currency converter built for learning purposes. This app demonstrates how to combine React state management, reusable UI components, custom hooks, and API-backed data fetching to build a practical frontend feature.
 
-Currently, two official plugins are available:
+It allows a user to:
+- enter an amount in one currency,
+- choose a source and target currency,
+- convert the value instantly,
+- swap the currencies with a single click,
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Currency selection for both source and target currencies
+- Numeric input for the amount to convert
+- Real-time conversion using live exchange-rate data
+- Swap button to reverse the conversion direction
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- React 19
+- Vite
+- JavaScript
+- Tailwind CSS
+- Fetch API for currency data
+- JSDelivr currency API
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## How It Works
+
+The app uses a custom hook, `useCurrencyInfo`, to fetch exchange-rate data for the selected source currency from the public currency API:
+
+https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${currency}.json
+
+
+## Getting Started
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Start the development server:
+
+```bash
+npm run dev
+```
+
+3. Open the local URL shown by Vite in the terminal (usually `http://localhost:5173`).
+
+
+## Notes
+
+- This app fetches currency conversion information from a public API and is suitable for demos and learning.
+- It does not include advanced production features such as:
+  - error handling for failed API requests,
+  - loading indicators,
+  - rate caching,
+  - historical exchange data,
+  - robust validation,
+  - user authentication or payment features.
+
+## Learning Goals
+
+This project is useful for understanding:
+- React state and event handling,
+- custom hooks,
+- reusable component design,
+- API integration in frontend apps,
+- form-driven UI development,
+- prop passing and controlled inputs,
+- styling with Tailwind CSS.
+
+## License
+
+This project is intended for educational use and is not configured as a production application or commercial package.
