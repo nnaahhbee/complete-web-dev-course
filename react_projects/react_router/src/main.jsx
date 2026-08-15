@@ -7,6 +7,7 @@ import Layout from './Layout.jsx'
 import Home from './components/Home/Home.jsx'
 import About from './components/About/About.jsx'
 import User from './components/User/User.jsx'
+import Github, {githubLoader} from './components/Github/Github.jsx'
 
 //routes in react to load a path
 const router = createBrowserRouter(
@@ -16,7 +17,11 @@ const router = createBrowserRouter(
         <Route path='about' element={<About />}/>
         <Route path="user/" element={<User />}> <Route path=':userid/' element={<User />} />
         </Route>  {/*for dynamic routing we can use the :userid in the path and then we can use the useParams hook to get the userid from the url */}
-        
+        <Route 
+        loader={githubLoader} //for loading data from the api we can use the loader function and then we can use the useLoaderData hook to get the data from the api
+        path="github" 
+        element={<Github />}/>
+        <Route path='*' element={<div>Not Found</div>}/> {/*for pages that is not yet defined */}
       </Route>
   )
 )
