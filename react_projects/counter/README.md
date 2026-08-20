@@ -1,16 +1,38 @@
-# React + Vite
+# Counter App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple React learning project that demonstrates how to manage and update state using the `useState` hook.
 
-Currently, two official plugins are available:
+This project is created solely for educational purposes. It is meant to help beginners understand how React state works in a small, easy-to-follow example.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Project Purpose
 
-## React Compiler
+The app shows a counter with two buttons:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Add value
+- Remove value
 
-## Expanding the ESLint configuration
+Each click updates the displayed number, helping learners visualize how React re-renders components when state changes.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech Stack
+
+- React
+- Vite
+- JavaScript
+
+## Learning Takeaways
+
+This app helps learners understand:
+
+- how state works in React
+- how `useState` updates the UI
+- how event handlers trigger re-renders
+- how React uses previous state updates safely
+- how simple components can be built and tested quickly
+
+## Educational Use Only
+
+This project is created solely for educational purposes. It is not intended for production deployment or commercial use.
+
+## Notes
+
+This is intentionally a minimal project. It focuses only on the counter concept so beginners can clearly understand the relationship between state, events, and rendering.
