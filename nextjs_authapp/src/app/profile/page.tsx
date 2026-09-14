@@ -9,7 +9,7 @@ export default function ProfilePage() {
     const router = useRouter();
     const [data, setData] = useState("nothing");
 
-    //function to logout user
+    //function to logout user 
     const logout = async () => {
         try{
            await axios.get('/api/users/logout')

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-//logout route handler
+//logout route handler 
 export async function GET() {
  try{
     const response = NextResponse.json(
