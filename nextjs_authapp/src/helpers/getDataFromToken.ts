@@ -1,7 +1,8 @@
 import {NextRequest} from "next/server";
 import jwt from "jsonwebtoken";
 
-//function to get user id from token
+// This helper reads the JWT from the browser cookie, verifies it, and returns
+// the user's ID. This is how protected pages or APIs know who is logged in.
 export const getDataFromToken = (request: NextRequest) => {
     try{
         const token = request.cookies.get("token")?.value || "";

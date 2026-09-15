@@ -4,7 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-//database connection
+
+// This route handles login. It checks the email and password, then creates a
+// JWT token that is saved in a cookie so the user stays logged in.
 connect();
 
 export async function POST(request: NextRequest) {
@@ -13,38 +15,41 @@ export async function POST(request: NextRequest) {
        const {email, password} = reqBody;
        console.log(reqBody);
 
-       //check if user exist
+       // Check if the user exists in MongoDB.
        const user = await User.findOne({email})
        if(!user){
         return NextResponse.json({error: "User does not exist"}, {status: 400})
        }
 
-       //check if password is correct
+       // Compare the entered password with the stored hashed password.
        const validPassword = await bcryptjs.compare(password, user.password);
          if(!validPassword){
             return NextResponse.json({error: "Invalid password"}, {status: 400})
          }
     
-        //create token data
-        const tokenData = {
-            id: user._id,
-            username: user.username,
-            email: user.email
-        }
+       // Create the data that will go inside the JWT.
+       const tokenData = {
+           id: user._id,
+           username: user.username,
+           email: user.email
+       }
 
-        //create token
-        const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET!, {expiresIn: "1d"})
+       // Create the token. It is valid for 1 day.
+       const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET!, {expiresIn: "1d"})
 
-        const response = NextResponse.json({message: "Login successful", success: true})
+       const response = NextResponse.json({message: "Login successful", success: true})
 
-        response.cookies.set("token", token, {
-            httpOnly: true, })
+       // Save the token in a cookie. httpOnly means the browser keeps it safe
+       // and JavaScript cannot read it directly.
+       response.cookies.set("token", token, {
+           httpOnly: true, })
 
-        return response;
+       return response;
 
     }catch(error: any) {
-        return NextResponse.json({message: error.message}, {status: 500})
+       return NextResponse.json({message: error.message}, {status: 500})
     }
 }
 
 
+ 

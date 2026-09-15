@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+// Beginner note:
+// This is the MongoDB schema for a user. A schema tells Mongoose which fields
+// a user document should have and which rules each field must follow.
 const userSchema = new mongoose.Schema({
     username: {
         type: String,

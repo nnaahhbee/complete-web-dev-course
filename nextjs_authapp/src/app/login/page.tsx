@@ -9,14 +9,20 @@ import toast from "react-hot-toast";
 
 export default function LoginPage() {
     const router = useRouter();
+    // Beginner note:
+    // This state stores the form values (email and password). When the user types,
+    // `setUser` updates only the field that changed.
     const [user, setUser] = React.useState({
         email: "",
         password: "",
     })
     const [buttonDisabled, setButtonDisabled] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
-     
+      
 
+    // Beginner note:
+    // This function sends the login form to the backend API. If the API responds
+    // successfully, we redirect the user to the profile page.
     const onLogin = async () => {
         try{
             setLoading(true);
