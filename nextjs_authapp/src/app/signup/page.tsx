@@ -9,6 +9,9 @@ import toast from "react-hot-toast";
 
 export default function SignupPage() {
     const router = useRouter();
+    
+    // This state holds the signup form data: username, email, and password.
+    // Each `onChange` event updates only one part of the state object.
     const [user, setUser] = React.useState({
         email: "",
         password: "",
@@ -19,14 +22,17 @@ export default function SignupPage() {
     const [buttonDisabled, setButtonDisabled] = React.useState(false);
 
     const [loading, setLoading] = React.useState(false);
-     
+      
+    // Beginner note:
+    // This function sends the form data to the backend signup API. If the server
+    // accepts it, the user is redirected to the login page.
     const onSignup = async () => {
         try{
             setLoading(true);
             const response =await axios.post("/api/users/signup", user);
             console.log("Signup success", response.data);
             router.push("/login");
-            
+             
         }catch(error:any){
             console.log("Signup failed", error.message);
             toast.error("Something went wrong");

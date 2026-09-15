@@ -5,7 +5,8 @@ export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
 
   //Check if the user is trying to access a public path (login or signup) and has a token
-  const isPublicPath = path === '/login'|| path === '/signup' 
+  const isPublicPath = path === '/login' || path === '/signup' || path === '/verifyemail'
+  
   const token = request.cookies.get('token')?.value || ''
 
   //If the user is trying to access a public path and has a token, redirect them to the home page
@@ -28,5 +29,6 @@ export const config = {
     '/profile/:path*',
     '/login',
     '/signup',
+    '/verifyemail'
   ],
 }
