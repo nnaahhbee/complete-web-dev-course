@@ -95,4 +95,4 @@ http://localhost:3000
 
 ## License
 
-This project is for learning and experimentation only.
+This project is for learning and experimentation only."# nextjs_authapp" 
