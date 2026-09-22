@@ -1,4 +1,4 @@
-import { Permission } from "node-appwrite"
+import { DatabasesIndexType, OrderBy, Permission } from "node-appwrite"
 
 import {db, questionCollection} from "../name"
 import { databases } from "./config"
@@ -26,4 +26,23 @@ export default async function createQuestionCollectin() {
     
     console.log("Question Attributes icreated")
 
+
+    // await Promise.all([
+    //     databases.createIndex(
+    //         db,
+    //         questionCollection,
+    //         "title",
+    //         DatabasesIndexType.Fulltext,
+    //         ["title"],
+    //         [OrderBy.Asc]
+    //     ),
+    //     databases.createIndex(
+    //         db,
+    //         questionCollection,
+    //         "content",
+    //         DatabasesIndexType.Fulltext,
+    //         ["content"],
+    //         [OrderBy.Asc]
+    //     )
+    // ])
 }
