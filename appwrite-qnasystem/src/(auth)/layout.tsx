@@ -1,3 +1,5 @@
+"use client"
+
 // Import the authentication store so this layout can check whether a user is signed in.
 import { useAuthStore } from "@/store/Auth"
 // Import Next.js navigation support for redirecting authenticated users.
