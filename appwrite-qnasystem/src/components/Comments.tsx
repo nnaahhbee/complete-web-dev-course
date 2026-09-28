@@ -12,7 +12,7 @@ import Link from "next/link";
 import React from "react";
 
 // Describes a comment as it is used by the UI, including the author's display name.
-type CommentDocument = Models.Document & {
+export type CommentDocument = Models.Document & {
     content: string;
     authorId: string;
     author: { name: string };
