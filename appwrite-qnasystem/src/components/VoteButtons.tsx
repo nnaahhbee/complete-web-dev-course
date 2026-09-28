@@ -9,10 +9,12 @@ import { ID, Models, Query } from "appwrite";
 import { useRouter } from "next/navigation";
 import React from "react";
 
+// A vote is an Appwrite document with a status describing whether it is an upvote or downvote.
 type VoteDocument = Models.Document & {
     voteStatus: "upvoted" | "downvoted";
 };
 
+// Shows the current vote total and lets the user vote on a question or answer.
 const VoteButtons = ({
     type,
     id,
@@ -26,15 +28,20 @@ const VoteButtons = ({
     downvotes: Models.DocumentList<Models.Document>;
     className?: string;
 }) => {
+    // undefined means the user's vote is still loading; null means they have not voted.
     const [votedDocument, setVotedDocument] = React.useState<VoteDocument | null>(); // undefined means not fetched yet
+    // Start with the number of upvotes minus the number of downvotes.
     const [voteResult, setVoteResult] = React.useState<number>(upvotes.total - downvotes.total);
 
+    // Read the signed-in user and navigation helper used to redirect guests to login.
     const { user } = useAuthStore();
     const router = useRouter();
 
+    // Look up this user's existing vote when the user or target item changes.
     React.useEffect(() => {
         (async () => {
             if (user) {
+                // Find a vote matching this item and the current user's ID.
                 const response = await databases.listDocuments<VoteDocument>(db, voteCollection, [
                     Query.equal("type", type),
                     Query.equal("typeId", id),
@@ -45,12 +52,15 @@ const VoteButtons = ({
         })();
     }, [user, id, type]);
 
+    // Submit an upvote; guests are sent to login and the count updates from the API response.
     const toggleUpvote = async () => {
         if (!user) return router.push("/login");
 
+        // Wait until the existing vote lookup has completed before allowing another vote.
         if (votedDocument === undefined) return;
 
         try {
+            // Send the vote choice and the item it belongs to the server.
             const response = await fetch(`/api/vote`, {
                 method: "POST",
                 body: JSON.stringify({
@@ -65,19 +75,24 @@ const VoteButtons = ({
 
             if (!response.ok) throw data;
 
+            // Update the displayed total and remember the user's latest vote.
             setVoteResult(() => data.data.voteResult);
             setVotedDocument(() => data.data.VoteDocument);
         } catch (error: any) {
+            // Let the user know if the vote request failed.
             window.alert(error?.message || "Something went wrong");
         }
     };
 
+    // Submit a downvote using the same flow as an upvote, with a different vote status.
     const toggleDownvote = async () => {
         if (!user) return router.push("/login");
 
+        // Do not submit while the existing vote is still being looked up.
         if (votedDocument === undefined) return;
 
         try {
+            // Send the downvote choice and the item it belongs to the server.
             const response = await fetch(`/api/vote`, {
                 method: "POST",
                 body: JSON.stringify({
@@ -92,13 +107,16 @@ const VoteButtons = ({
 
             if (!response.ok) throw data;
 
+            // Refresh the displayed total and the user's current vote from the response.
             setVoteResult(() => data.data.voteResult);
             setVotedDocument(() => data.data.document);
         } catch (error: any) {
+            // Let the user know if the vote request failed.
             window.alert(error?.message || "Something went wrong");
         }
     };
 
+    // Render the upvote and downvote controls, highlighting the option the user selected.
     return (
         <div className={cn("flex shrink-0 flex-col items-center justify-start gap-y-4", className)}>
             <button
