@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
+    "@tabler/icons-react": "^3.48.0",
     "@types/canvas-confetti": "^1.9.0",
     "@uiw/react-markdown-editor": "^6.1.4",
     "appwrite": "^27.0.0",
