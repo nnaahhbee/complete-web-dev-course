@@ -13,7 +13,7 @@ import Link from "next/link";
 import { Trash2 } from "lucide-react"
 
 // Describes the answer data this component displays, including related votes, comments, and author details.
-type AnswerDocument = Models.Document & {
+export type AnswerDocument = Models.Document & {
     authorId: string;
     content: string;
     author: {
