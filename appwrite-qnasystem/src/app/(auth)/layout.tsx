@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/Auth"
 import { useRouter } from "next/router";
 // Import React types and hooks used by this layout.
 import React from "react";
+import { BackgroundBeams } from "@/components/ui/background-beams";
 
 // Define the shared layout for authentication pages, such as login and registration.
 // The children parameter represents the page currently displayed inside this layout.
@@ -28,11 +29,12 @@ const Layout = ({children}: {children: React.ReactNode}) => {
     }
 
     // Render the current authentication page inside the layout's wrapper elements.
-    return(
-        <div className="">
-            <div className="">{children}</div>
-        </div>
-    )
+   return (
+    <div className="relative flex min-h-screen flex-col items-center justify-center py-12">
+      <BackgroundBeams />
+      <div className="relative">{children}</div>
+    </div>
+  )
 
 }
 
