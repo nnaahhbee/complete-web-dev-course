@@ -20,10 +20,12 @@ const Layout = async ({
     params,
 }: {
     children: React.ReactNode;
-    params: { userId: string; userSlug: string };
+    params: Promise<{ userId: string; userSlug: string }>;
 }) => {
+    const { userId } = await params;
+
     // Load this profile's user record using the ID from the route.
-    const user = await users.get<UserPrefs>(params.userId);
+    const user = await users.get<UserPrefs>(userId);
 
     // Show the profile header, navigation, and the selected section's content.
     return (

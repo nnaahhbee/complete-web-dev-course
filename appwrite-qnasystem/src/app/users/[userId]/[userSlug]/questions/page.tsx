@@ -19,24 +19,32 @@ const Page = async ({
     params,
     searchParams,
 }: {
-    params: { userId: string; userSlug: string };
-    searchParams: { page?: string };
+    params: Promise<{ userId: string; userSlug: string }>;
+    searchParams: Promise<{ page?: string }>;
 }) => {
+    const { userId } = await params;
+    const resolvedSearchParams = await searchParams;
+
     // Show the first page when the URL does not include a page number.
-    searchParams.page ||= "1";
+    resolvedSearchParams.page ||= "1";
 
     // Find this user's newest questions and select 25 records for the requested page.
     const queries = [
-        Query.equal("authorId", params.userId),
+        Query.equal("authorId", userId),
         Query.orderDesc("$createdAt"),
-        Query.offset((+searchParams.page - 1) * 25),
+        Query.offset((+resolvedSearchParams.page - 1) * 25),
         Query.limit(25),
     ];
 
-    // Describe the question fields this page expects from the database.
-     type QuestionDocument = Models.Document & {
+    // Describe the fields stored in an Appwrite question document.
+    type QuestionDocument = Models.Document & {
         title: string;
         tags: string[];
+        authorId: string;
+    };
+
+    // Describe the author information and counts added for each question card.
+    type QuestionWithDetails = QuestionDocument & {
         totalVotes: number;
         totalAnswers: number;
         author: {
@@ -44,17 +52,17 @@ const Page = async ({
             name: string;
             reputation: number;
         };
-    }
+    };
 
     // Fetch the selected page of this user's questions using the expected document shape.
     const questions = await databases.listDocuments<QuestionDocument>(db, questionCollection, queries);
 
     // Load each question's author and count its answers and votes.
-    questions.documents = await Promise.all(
+    const questionsWithDetails: QuestionWithDetails[] = await Promise.all(
         questions.documents.map(async ques => {
             // Run these three independent lookups at the same time.
             const [author, answers, votes] = await Promise.all([
-                users.get<UserPrefs>(ques.author.$id),
+                users.get<UserPrefs>(ques.authorId),
                 databases.listDocuments(db, answerCollection, [
                     Query.equal("questionId", ques.$id),
                     Query.limit(1), // for optimization
@@ -88,7 +96,7 @@ const Page = async ({
             </div>
             <div className="mb-4 max-w-3xl space-y-6">
                 {/* Render each question with the reusable question card component. */}
-                {questions.documents.map(ques => (
+                {questionsWithDetails.map(ques => (
                     <QuestionCard key={ques.$id} ques={ques} />
                 ))}
             </div>

@@ -13,17 +13,19 @@ import { answerCollection, db, questionCollection } from "@/models/name";
 import { Query } from "node-appwrite";
 
 // Load the selected user's profile and activity statistics for the summary page.
-const Page = async ({ params }: { params: { userId: string; userSlug: string } }) => {
+const Page = async ({ params }: { params: Promise<{ userId: string; userSlug: string }> }) => {
+    const { userId } = await params;
+
     // Fetch the profile, question count, and answer count at the same time.
     const [user, questions, answers] = await Promise.all([
-        users.get<UserPrefs>(params.userId),
+        users.get<UserPrefs>(userId),
         databases.listDocuments(db, questionCollection, [
-            Query.equal("authorId", params.userId),
+            Query.equal("authorId", userId),
             // Ask for only one matching record; the database total still gives the full count.
             Query.limit(1), // for optimization
         ]),
         databases.listDocuments(db, answerCollection, [
-            Query.equal("authorId", params.userId),
+            Query.equal("authorId", userId),
             // Ask for only one matching record; the database total still gives the full count.
             Query.limit(1), // for optimization
         ]),

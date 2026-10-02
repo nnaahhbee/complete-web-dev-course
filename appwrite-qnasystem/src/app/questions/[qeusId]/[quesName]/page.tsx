@@ -20,31 +20,42 @@ import EditQuestion from "./EditQuestion";
 import { TracingBeam } from "@/components/ui/tracing-beam";
 
 
+const toPlainDocumentList = <T extends object>(list: { total: number; documents: T[] }) => ({
+    total: list.total,
+    documents: list.documents.map(document => ({ ...document })),
+});
+
 // Load one question and all related records on the server before rendering its detail page.
-const Page = async ({params}: {params: {quesId: string; quesName: string}}) => {
+const Page = async ({
+    params,
+}: {
+    params: Promise<{ qeusId: string; quesName: string }>;
+}) => {
+    const { qeusId } = await params;
+
     // Fetch the question, its answers, vote totals, and comments at the same time.
     // Promise.all lets independent database requests run in parallel.
     const [question, answers, upvotes, downvotes, comments] = await Promise.all([
-        databases.getDocument(db, questionCollection, params.quesId),
+        databases.getDocument(db, questionCollection, qeusId),
         databases.listDocuments<AnswerDocument>(db, answerCollection, [
             Query.orderDesc("$createdAt"),
-            Query.equal("questionId", params.quesId),
+            Query.equal("questionId", qeusId),
         ]),
          databases.listDocuments(db, voteCollection, [
-            Query.equal("typeId", params.quesId),
+            Query.equal("typeId", qeusId),
             Query.equal("type", "question"),
             Query.equal("voteStatus", "upvoted"),
             Query.limit(1), // for optimization
         ]),
          databases.listDocuments(db, voteCollection, [
-            Query.equal("typeId", params.quesId),
+            Query.equal("typeId", qeusId),
             Query.equal("type", "question"),
             Query.equal("voteStatus", "downvoted"),
             Query.limit(1), // for optimization
         ]),
         databases.listDocuments<CommentDocument>(db, commentCollection, [
             Query.equal("type", "question"),
-            Query.equal("typeId", params.quesId),
+            Query.equal("typeId", qeusId),
             Query.orderDesc("$createdAt"),
         ]),  
     ]);
@@ -122,6 +133,17 @@ const Page = async ({params}: {params: {quesId: string; quesName: string}}) => {
         ),
     ]);
 
+    const serializableComments = toPlainDocumentList(comments);
+    const serializableAnswers = {
+        total: answers.total,
+        documents: answers.documents.map(answer => ({
+            ...answer,
+            comments: toPlainDocumentList(answer.comments),
+            upvotesDocuments: toPlainDocumentList(answer.upvotesDocuments),
+            downvotesDocuments: toPlainDocumentList(answer.downvotesDocuments),
+        })),
+    };
+
     // Render the question detail view, including the question controls, comments, and answers.
     return (
         <TracingBeam className="container pl-6">
@@ -146,7 +168,7 @@ const Page = async ({params}: {params: {quesId: string; quesName: string}}) => {
                             <span>Votes {upvotes.total + downvotes.total}</span>
                         </div>
                     </div>
-                    <Link href="/questions/ask" className="ml-auto inline-block shrink-0">
+                    <Link href="/questions/ask?showForm=true" className="ml-auto inline-block shrink-0">
                         <ShimmerButton className="shadow-2xl">
                             <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
                                 Ask a question
@@ -162,8 +184,8 @@ const Page = async ({params}: {params: {quesId: string; quesName: string}}) => {
                             type="question"
                             id={question.$id}
                             className="w-full"
-                            upvotes={upvotes}
-                            downvotes={downvotes}
+                            upvotes={toPlainDocumentList(upvotes)}
+                            downvotes={toPlainDocumentList(downvotes)}
                         />
                         <EditQuestion
                             questionId={question.$id}
@@ -222,7 +244,7 @@ const Page = async ({params}: {params: {quesId: string; quesName: string}}) => {
                         </div>
                         {/* Pass the question's comments and ID to the reusable Comments component. */}
                         <Comments
-                            comments={comments}
+                            comments={serializableComments}
                             className="mt-4"
                             type="question"
                             typeId={question.$id}
@@ -231,8 +253,10 @@ const Page = async ({params}: {params: {quesId: string; quesName: string}}) => {
                     </div>
                 </div>
                 {/* Render the answers for this question and provide the answer submission form. */}
-                <Answers answers={answers} questionId={question.$id} />
+                <Answers answers={serializableAnswers} questionId={question.$id} />
             </div>
         </TracingBeam>
     );
 }
+
+export default Page;

@@ -74,7 +74,7 @@ const HeroSectionHeader = () => {
                         <div className="flex items-center justify-center gap-4">
                             {/* Signed-in users can go straight to the question form. */}
                             {session ? (
-                                <Link href="/questions/ask">
+                                <Link href="/questions/ask?showForm=true">
                                     <ShimmerButton className="shadow-2xl">
                                         <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
                                             Ask a question
@@ -106,8 +106,7 @@ const HeroSectionHeader = () => {
                 <div className="flex items-center justify-center">
                     <div className="relative max-w-lg overflow-hidden">
                         {/* Turn each technology name into an icon image URL. */}
-                        <IconCloud images={slugs.map(slug => `https://cdn.simpleicons.org/${slug}`)}
-/>
+                        <IconCloud images={slugs.map(slug => `https://cdn.simpleicons.org/${slug}`)}/>
                     </div>
                 </div>
             </div>

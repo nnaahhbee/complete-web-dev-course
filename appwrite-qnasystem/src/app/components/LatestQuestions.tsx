@@ -12,18 +12,23 @@ import { Models } from "appwrite";
 import { Query } from "node-appwrite";
 import React from "react";
 
-// Describe the question fields that this component loads and displays.
+// Describe the fields stored in an Appwrite question document.
 type QuestionDocument = Models.Document & {
-        title: string;
-        tags: string[];
-        totalVotes: number;
-        totalAnswers: number;
-        author: {
-            $id: string;
-            name: string;
-            reputation: number;
-        };
-    }
+    title: string;
+    tags: string[];
+    authorId: string;
+};
+
+// Describe the author information and counts added for the question card.
+type QuestionWithDetails = QuestionDocument & {
+    totalVotes: number;
+    totalAnswers: number;
+    author: {
+        $id: string;
+        name: string;
+        reputation: number;
+    };
+};
 
 const LatestQuestions = async () => {
     // Get the five newest questions from the database.
@@ -34,11 +39,11 @@ const LatestQuestions = async () => {
     console.log("Fetched Questions:", questions);
 
     // Load each question's author details and the total numbers of answers and votes.
-    questions.documents = await Promise.all(
+    const questionsWithDetails: QuestionWithDetails[] = await Promise.all(
         questions.documents.map(async ques => {
             // Fetch the author and counts at the same time because these lookups are independent.
             const [author, answers, votes] = await Promise.all([
-                users.get<UserPrefs>(ques.author.$id),
+                users.get<UserPrefs>(ques.authorId),
                 databases.listDocuments(db, answerCollection, [
                     Query.equal("questionId", ques.$id),
                     Query.limit(1), // for optimization
@@ -70,7 +75,7 @@ const LatestQuestions = async () => {
     return (
         <div className="space-y-6">
             {/* Create one question card for every question returned from the database. */}
-            {questions.documents.map(question => (
+            {questionsWithDetails.map(question => (
                 <QuestionCard key={question.$id} ques={question} />
             ))}
         </div>

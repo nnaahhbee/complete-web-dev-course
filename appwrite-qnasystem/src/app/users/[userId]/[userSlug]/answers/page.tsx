@@ -18,17 +18,20 @@ const Page = async ({
     params,
     searchParams,
 }: {
-    params: { userId: string; userSlug: string };
-    searchParams: { page?: string };
+    params: Promise<{ userId: string; userSlug: string }>;
+    searchParams: Promise<{ page?: string }>;
 }) => {
+    const { userId } = await params;
+    const resolvedSearchParams = await searchParams;
+
     // Start on the first page when the URL does not specify a page number.
-    searchParams.page ||= "1";
+    resolvedSearchParams.page ||= "1";
 
     // Fetch this user's newest answers, requesting 25 answers for the selected page.
     const queries = [
-        Query.equal("authorId", params.userId),
+        Query.equal("authorId", userId),
         Query.orderDesc("$createdAt"),
-        Query.offset((+searchParams.page - 1) * 25),
+        Query.offset((+resolvedSearchParams.page - 1) * 25),
         Query.limit(25),
     ];
 

@@ -3,7 +3,7 @@
 // Import the authentication store so this layout can check whether a user is signed in.
 import { useAuthStore } from "@/store/Auth"
 // Import Next.js navigation support for redirecting authenticated users.
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 // Import React types and hooks used by this layout.
 import React from "react";
 import { BackgroundBeams } from "@/components/ui/background-beams";
